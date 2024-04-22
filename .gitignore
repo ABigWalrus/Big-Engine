@@ -31,6 +31,9 @@
 *.out
 *.app
 
+*.bat
+*.spv
+
 CMakeLists.txt.user
 CMakeCache.txt
 CMakeFiles
