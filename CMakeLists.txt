@@ -11,6 +11,7 @@ include_directories(
 	libs/glfw-3.4/include/
 	libs/glm/
 	C:/VulkanSDK/1.3.280.0/Include
+	libs/stb-master
 )
 # target_include_directories(target PUBLIC )
 add_executable(VulkanTutorial src/main.cpp)
