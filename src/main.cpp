@@ -1958,7 +1958,7 @@ private:
         region.imageExtent = {
             width,
             height,
-            1
+            1   
         };
 
         vkCmdCopyBufferToImage(
