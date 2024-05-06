@@ -1,6 +1,5 @@
 # Prerequisites
 *.d
-
 # Compiled Object files
 *.slo
 *.lo
@@ -49,3 +48,8 @@ _deps
 [Bb][Uu][Ii][Ll][Dd]
 libs
 .vscode
+
+external/glfw-3.4
+external/glm
+external/stb-master
+external/tinyobjloader-release
