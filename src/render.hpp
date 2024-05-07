@@ -12,23 +12,8 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
 
-
-#include <chrono>
-#include <iostream>
-#include <stdexcept>
-#include <cstdlib>
 #include <vector>
-#include <cstring>
-#include <map>
 #include <optional>
-#include <set>
-#include <cstdint>
-#include <limits>
-#include <algorithm>
-#include <fstream>
-#include <array>
-#include <unordered_map>
-
 // #define MAX_FRAMES_IN_FLIGHT 2;
 // #define WIDTH 800;
 // #define HEIGHT 600;
@@ -88,9 +73,12 @@ struct UniformBufferObject {
 
 class VulkanRenderer {
 public:
-    void run();
-private:
     GLFWwindow* window;
+
+    void init();
+    void render();
+    void cleanup();
+private:
     uint32_t currentFrame = 0;
     bool framebufferResized = false;
     uint32_t mipLevels;
@@ -163,9 +151,6 @@ private:
 
     void initVulkan();
     void initWindow();
-
-    void mainLoop();
-    void cleanup();
 
     void pickPhysicalDevice();
 

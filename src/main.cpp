@@ -1,8 +1,11 @@
-#include "render.hpp"
+#include "app.hpp"
+#include <iostream>
+#include <stdexcept>
+#include <cstdlib>
 
 int main() {
 
-    VulkanRenderer app1;
+    NonameApplication app1;
     try {
         app1.run();
     }

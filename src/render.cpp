@@ -1,4 +1,30 @@
-#include "render.hpp"
+#define GLFW_INCLUDE_VULKAN
+#include <GLFW/glfw3.h>
+#include <vulkan/vulkan.h>
+
+#define GLM_FORCE_RADIANS
+#define GLM_FORCE_DEFAULT_ALIGNED_GENTYPES
+#define GLM_FORCE_DEPTH_ZERO_TO_ONE
+#include <glm/glm.hpp>
+#include <glm/gtc/matrix_transform.hpp>
+#define GLM_ENABLE_EXPERIMENTAL
+#include <glm/gtx/hash.hpp>
+
+#include <chrono>
+#include <iostream>
+#include <stdexcept>
+#include <cstdlib>
+#include <vector>
+#include <cstring>
+#include <map>
+#include <optional>
+#include <set>
+#include <cstdint>
+#include <limits>
+#include <algorithm>
+#include <fstream>
+#include <array>
+#include <unordered_map>
 
 #define STB_IMAGE_IMPLEMENTATION
 #include <stb_image.h>
@@ -6,10 +32,12 @@
 #define TINYOBJLOADER_IMPLEMENTATION
 #include <tiny_obj_loader.h>
 
+#include "render.hpp"
+
 const uint32_t WIDTH = 800;
 const uint32_t HEIGHT = 600;
 
-const std::string MODEL_PATH = "../assets/models/viking_room.obj";
+const std::string MODEL_PATH = "../assets/models/smooth_vase.obj";
 const std::string TEXTURE_PATH = "../assets/textures/viking_room.png";
 
 const int MAX_FRAMES_IN_FLIGHT = 2;
@@ -131,12 +159,12 @@ namespace std {
 //     alignas(16) glm::mat4 view;
 //     alignas(16) glm::mat4 proj;
 // };
-void VulkanRenderer::run() {
-    initWindow();
-    initVulkan();
-    mainLoop();
-    cleanup();
-}
+// void VulkanRenderer::run() {
+//     initWindow();
+//     initVulkan();
+//     mainLoop();
+//     cleanup();
+// }
 
 void VulkanRenderer::initVulkan() {
     createInstance();
@@ -177,16 +205,17 @@ void VulkanRenderer::initWindow() {
     glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 }
 
-void VulkanRenderer::mainLoop() {
-    while (!glfwWindowShouldClose(window)) {
-        glfwPollEvents();
-        drawFrame();
-    }
+void VulkanRenderer::init(){
+    initWindow();
+    initVulkan();
+}
 
-    vkDeviceWaitIdle(device);
+void VulkanRenderer::render(){
+    drawFrame();
 }
 
 void VulkanRenderer::cleanup() {
+    vkDeviceWaitIdle(device);
     std::cout << ". . . Cleaning up . . .\n";
     cleanupSwapChain();
 

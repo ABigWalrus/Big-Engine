@@ -1,5 +1,12 @@
-#ifndef NONAME_APP_HPP 
-#define NONAME_APP_HPP
+#pragma once
 
+#include "render.hpp"
 
-#endif
+class NonameApplication{
+public:
+    void run();
+    void cleanup();
+    void mainLoop();
+private:
+    VulkanRenderer renderer;
+};

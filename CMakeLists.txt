@@ -8,6 +8,7 @@ find_package(Vulkan REQUIRED)
 # set(CMAKE_CXX_STANDARD 17)
 add_subdirectory("external")
 include_directories(
+	"src/app.hpp"
 	"src/render.hpp"
 	"external/glfw-3.4/include/"
 	"external/glm/"
@@ -19,6 +20,7 @@ include_directories(
 add_executable(
 	VulkanTutorial
 	src/main.cpp
-	src/render.cpp	
+	src/render.cpp
+	src/app.cpp
 )
 target_link_libraries(VulkanTutorial ${Vulkan_LIBRARIES} glfw)
