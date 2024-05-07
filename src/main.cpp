@@ -5,9 +5,11 @@
 
 int main() {
 
-    NonameApplication app1;
+    NNApplication app1;
     try {
+        // app1.init();
         app1.run();
+        // app1.cleanup();
     }
     catch (const std::exception& e) {
         std::cerr << e.what() << std::endl;

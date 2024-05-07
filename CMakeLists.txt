@@ -10,6 +10,7 @@ add_subdirectory("external")
 include_directories(
 	"src/app.hpp"
 	"src/render.hpp"
+	"src/window.hpp"
 	"external/glfw-3.4/include/"
 	"external/glm/"
 	"C:/VulkanSDK/1.3.280.0/Include"
@@ -22,5 +23,6 @@ add_executable(
 	src/main.cpp
 	src/render.cpp
 	src/app.cpp
+	src/window.cpp
 )
 target_link_libraries(VulkanTutorial ${Vulkan_LIBRARIES} glfw)

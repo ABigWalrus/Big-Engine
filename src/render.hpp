@@ -14,6 +14,7 @@
 
 #include <vector>
 #include <optional>
+#include <string>
 // #define MAX_FRAMES_IN_FLIGHT 2;
 // #define WIDTH 800;
 // #define HEIGHT 600;
@@ -75,10 +76,13 @@ class VulkanRenderer {
 public:
     GLFWwindow* window;
 
-    void init();
+    void init(GLFWwindow* window, uint32_t width, uint32_t heigth);
     void render();
     void cleanup();
 private:
+    uint32_t WIDTH = 800;
+    uint32_t HEIGHT = 600;
+
     uint32_t currentFrame = 0;
     bool framebufferResized = false;
     uint32_t mipLevels;
@@ -256,7 +260,7 @@ private:
 
     bool hasStencilComponent(VkFormat format);
 
-    void loadModel();
+    void loadModel(std::string model_path);
 
     VkSampleCountFlagBits getMaxUsableSampleCount();
 

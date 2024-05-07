@@ -34,8 +34,8 @@
 
 #include "render.hpp"
 
-const uint32_t WIDTH = 800;
-const uint32_t HEIGHT = 600;
+// const uint32_t WIDTH = 800;
+// const uint32_t HEIGHT = 600;
 
 const std::string MODEL_PATH = "../assets/models/smooth_vase.obj";
 const std::string TEXTURE_PATH = "../assets/textures/viking_room.png";
@@ -184,7 +184,10 @@ void VulkanRenderer::initVulkan() {
     createTextureImage();
     createTextureImageView();
     createTextureSampler();
-    loadModel();
+    // std::string model_path01 = "../assets/models/cube.obj";
+    loadModel(MODEL_PATH);
+    // std::string model_path02 = "../assets/models/viking_room.obj";
+    // loadModel(model_path02);
     createVertexBuffer();
     createIndexBuffer();
     createUniformBuffers();
@@ -192,21 +195,24 @@ void VulkanRenderer::initVulkan() {
     createDescriptorSets();
     createCommandBuffers();
     createSyncObjects();
-}
 
-void VulkanRenderer::initWindow() {
-    glfwInit();
-
-    glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-    //glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-    window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
-    glfwSetWindowUserPointer(window, this);
     glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 }
 
-void VulkanRenderer::init(){
-    initWindow();
+// void VulkanRenderer::initWindow() {
+//     glfwInit();
+
+//     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
+//     //glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
+
+//     window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
+//     glfwSetWindowUserPointer(window, this);
+// }
+
+void VulkanRenderer::init(GLFWwindow* _window, uint32_t width, uint32_t heigth){
+    window = _window;
+    WIDTH = width;
+    HEIGHT = heigth;
     initVulkan();
 }
 
@@ -1988,13 +1994,13 @@ bool VulkanRenderer::hasStencilComponent(VkFormat format) {
     return format == VK_FORMAT_D32_SFLOAT_S8_UINT || format == VK_FORMAT_D24_UNORM_S8_UINT;
 }
 
-void VulkanRenderer::loadModel() {
+void VulkanRenderer::loadModel(std::string model_path) {
     tinyobj::attrib_t attrib;
     std::vector<tinyobj::shape_t> shapes;
     std::vector<tinyobj::material_t> materials;
     std::string warn, err;
 
-    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, MODEL_PATH.c_str())) {
+    if (!tinyobj::LoadObj(&attrib, &shapes, &materials, &warn, &err, model_path.c_str())) {
         throw std::runtime_error(warn + err);
     }
 

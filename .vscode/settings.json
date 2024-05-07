@@ -54,6 +54,14 @@
         "cinttypes": "cpp",
         "typeinfo": "cpp",
         "format": "cpp",
-        "span": "cpp"
+        "span": "cpp",
+        "charconv": "cpp",
+        "chrono": "cpp",
+        "expected": "cpp",
+        "ratio": "cpp",
+        "semaphore": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp",
+        "variant": "cpp"
     }
 }
