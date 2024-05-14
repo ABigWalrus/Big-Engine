@@ -5,7 +5,7 @@
 
 int main() {
 
-    NNApplication app1;
+    Application app1;
     try {
         // app1.init();
         app1.run();

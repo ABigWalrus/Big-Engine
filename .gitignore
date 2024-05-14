@@ -53,3 +53,4 @@ external/glfw-3.4
 external/glm
 external/stb-master
 external/tinyobjloader-release
+glfw*

@@ -72,7 +72,7 @@ struct UniformBufferObject {
     alignas(16) glm::mat4 proj;
 };
 
-class VulkanRenderer {
+class DeerRenderer {
 public:
     GLFWwindow* window;
 

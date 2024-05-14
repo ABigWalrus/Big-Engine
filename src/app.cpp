@@ -6,26 +6,26 @@
 #include "render.hpp"
 #include "window.hpp"
 
-NNApplication::NNApplication(){
+Application::Application(){
     init();
 }
 
-NNApplication::~NNApplication(){
+Application::~Application(){
     cleanup();
 }
 
-void NNApplication::run(){
+void Application::run(){
     while (window.isOpen()) {
         glfwPollEvents();
         renderer.render();
     }
 }
 
-void NNApplication::init(){
+void Application::init(){
     renderer.init(window.getWindow(), window.getWidth(), window.getWidth());   
 }
 
 
-void NNApplication::cleanup(){
+void Application::cleanup(){
     renderer.cleanup();
 }

@@ -5,10 +5,10 @@
 
 #include <string>
 
-class NNWindow{
+class DeerWindow{
 public:
-    NNWindow(std::string windowName, uint32_t width, uint32_t heigth);
-    ~NNWindow();
+    DeerWindow(std::string windowName, uint32_t width, uint32_t heigth);
+    ~DeerWindow();
     uint32_t getWidth() const;
     uint32_t getHeight() const;
     GLFWwindow* getWindow() const;
