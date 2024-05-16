@@ -19,8 +19,8 @@ public:
     // void cleanup();
 
 private:
-    DeerWindow window{"TEST WINDOW", WIDTH, HEIGTH};
-    DeerRenderer renderer;
+    BigWindow window{"TEST WINDOW", WIDTH, HEIGTH};
+    BigRenderer renderer;
 
     // void initWindow();
     // void mainLoop();

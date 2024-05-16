@@ -5,10 +5,10 @@
 
 #include <string>
 
-class DeerWindow{
+class BigWindow{
 public:
-    DeerWindow(std::string windowName, uint32_t width, uint32_t heigth);
-    ~DeerWindow();
+    BigWindow(std::string windowName, uint32_t width, uint32_t heigth);
+    ~BigWindow();
     uint32_t getWidth() const;
     uint32_t getHeight() const;
     GLFWwindow* getWindow() const;

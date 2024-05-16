@@ -2,15 +2,15 @@
 
 #include <string>
 
-DeerWindow::DeerWindow(std::string _windowName, uint32_t _width, uint32_t _heigth):windowName{_windowName}, width{_width}, heigth{_heigth}{
+BigWindow::BigWindow(std::string _windowName, uint32_t _width, uint32_t _heigth):windowName{_windowName}, width{_width}, heigth{_heigth}{
     initWindow();
 }
 
-DeerWindow::~DeerWindow(){
+BigWindow::~BigWindow(){
     cleanupWindow();
 }
 
-void DeerWindow::initWindow(){
+void BigWindow::initWindow(){
     glfwInit();
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -19,23 +19,23 @@ void DeerWindow::initWindow(){
     windowPointer = glfwCreateWindow(width, heigth, windowName.c_str(), nullptr, nullptr);
     glfwSetWindowUserPointer(windowPointer, this);
 }
-void DeerWindow::cleanupWindow(){
+void BigWindow::cleanupWindow(){
     glfwDestroyWindow(windowPointer);
     glfwTerminate();
 }
 
-uint32_t DeerWindow::getWidth() const{
+uint32_t BigWindow::getWidth() const{
     return width;
 }
 
-uint32_t DeerWindow::getHeight() const{
+uint32_t BigWindow::getHeight() const{
     return heigth;
 }
 
-GLFWwindow* DeerWindow::getWindow() const{
+GLFWwindow* BigWindow::getWindow() const{
     return windowPointer;
 }
 
-bool DeerWindow::isOpen(){
+bool BigWindow::isOpen(){
         return !glfwWindowShouldClose(windowPointer);
 }
