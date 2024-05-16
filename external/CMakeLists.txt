@@ -1,18 +1,9 @@
-# add_subdirectory (glfw-3.4)
-include_directories(
-	# libs/glfw-3.4/include/
-	# libs/glm/
+set(STB_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/stb-master")
+set(GLM_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/glm")
+set(TINYOBJLOADER_INCLUDE_DIRS "${CMAKE_CURRENT_LIST_DIR}/tinyobjloader-release")
+
+target_include_directories(${PROJECT_NAME} PUBLIC
+	${STB_INCLUDE_DIRS}
+	${GLM_INCLUDE_DIRS}
+	${TINYOBJLOADER_INCLUDE_DIRS}
 )
-
-# Search for the header
-# FIND_PATH(GLFW3_INCLUDE_DIR "GLFW/glfw3.h"
-# "${CMAKE_CURRENT_SOURCE_DIR}/libs/glfw-3.4.bin.WIN64/include" )
-
-# # Search for the library
-# FIND_LIBRARY(GLFW3_LIBRARY NAMES glfw3 glfw
-# "${CMAKE_CURRENT_SOURCE_DIR}/libs/glfw-3.4.bin.WIN64/lib-msvc110/lib"
-# )
-
-# INCLUDE(FindPackageHandleStandardArgs)
-# FIND_PACKAGE_HANDLE_STANDARD_ARGS(GLFW3 DEFAULT_MSG
-# GLFW3_LIBRARY GLFW3_INCLUDE_DIR)
