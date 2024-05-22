@@ -54,3 +54,5 @@ external/glm
 external/stb-master
 external/tinyobjloader-release
 glfw*
+
+TODO.md

@@ -35,3 +35,59 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 # )
 target_link_libraries(${PROJECT_NAME} ${GLFW_LIB} ${Vulkan_LIBRARIES})
 # target_link_libraries(VulkanTutorial ${Vulkan_LIBRARIES} glfw)
+
+find_program(GLSL_VALIDATOR glslangValidator HINTS 
+	${Vulkan_GLSLANG_VALIDATOR_EXECUTABLE} 
+	/usr/bin 
+	/usr/local/bin 
+	${VULKAN_SDK_PATH}/Bin
+	${VULKAN_SDK_PATH}/Bin32
+	$ENV{VULKAN_SDK}/Bin/ 
+	$ENV{VULKAN_SDK}/Bin32/
+)
+
+set(SHADERS_SOURCE_DIR "${PROJECT_SOURCE_DIR}/assets/shaders")
+
+file(GLOB_RECURSE VERTEX_SHADERS
+	"${SHADERS_SOURCE_DIR}/*.vert"
+)
+
+file(GLOB_RECURSE FRAGMENT_SHADERS
+	"${SHADERS_SOURCE_DIR}/*.frag"
+)
+
+add_custom_target(
+    COMPILED_SHADERS
+    DEPENDS ${SPIRV_BINARY_FILES}
+)
+
+foreach(VERTEX_SHADER ${VERTEX_SHADERS})
+	# get_filename_component(FILE_NAME ${SHADER} NAME)
+	# message(STATUS ${FILE_NAME})
+	message(STATUS ${GLSL_VALIDATOR})
+	set(SPIRV01 "${SHADERS_SOURCE_DIR}/vert.spv")
+	add_custom_command(
+		OUTPUT ${SPIRV01}
+		COMMAND ${GLSL_VALIDATOR} -V ${SHADER} -o ${SPIRV01}
+		# WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS ${VERTEX_SHADER}
+	)
+	list(APPEND SPIRV_BINARY_FILES ${SPIRV01})
+endforeach(VERTEX_SHADER)
+
+foreach(FRAGMENT_SHADER ${FRAGMENT_SHADERS})
+	# get_filename_component(FILE_NAME ${SHADER} NAME)
+	message(STATUS ${FRAGMENT_SHADER})
+	set(SPIRV02 "${SHADERS_SOURCE_DIR}/pukpuk.spv")
+	add_custom_command(
+		OUTPUT ${SPIRV02}
+		COMMAND ${GLSL_VALIDATOR} -V ${SHADER} -o ${SPIRV02}
+		# WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+		DEPENDS ${FRAGMENT_SHADER}
+	)
+	list(APPEND SPIRV_BINARY_FILES ${SPIRV02})
+endforeach(FRAGMENT_SHADER)
+
+
+
+# message(STATUS ${SPIRV_BINARY_FILES})

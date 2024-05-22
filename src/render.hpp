@@ -15,15 +15,7 @@
 #include <vector>
 #include <optional>
 #include <string>
-// #define MAX_FRAMES_IN_FLIGHT 2;
-// #define WIDTH 800;
-// #define HEIGHT 600;
 
-// #ifdef NDEBUG
-//     const bool enableValidationLayers = false;
-// #else
-//     const bool enableValidationLayers = true;
-// #endif
 
 struct QueueFamilyIndices {
     std::optional<uint32_t> graphicsFamily;
@@ -48,30 +40,23 @@ struct Vertex {
     static std::array<VkVertexInputAttributeDescription, 3> getAttributeDescriptions();
     bool operator==(const Vertex& other) const;
 }; 
-
-
-// const std::vector<Vertex> vertices = {    
-//     {{-0.5f, -0.5f, 0.0f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-//     {{0.5f, -0.5f, 0.0f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-//     {{0.5f, 0.5f, 0.0f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-//     {{-0.5f, 0.5f, 0.0f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}},
-
-//     {{-0.5f, -0.5f, -0.5f}, {1.0f, 0.0f, 0.0f}, {0.0f, 0.0f}},
-//     {{0.5f, -0.5f, -0.5f}, {0.0f, 1.0f, 0.0f}, {1.0f, 0.0f}},
-//     {{0.5f, 0.5f, -0.5f}, {0.0f, 0.0f, 1.0f}, {1.0f, 1.0f}},
-//     {{-0.5f, 0.5f, -0.5f}, {1.0f, 1.0f, 1.0f}, {0.0f, 1.0f}}
-// };
-
-// const std::vector<uint16_t> indices = {
-//     0, 1, 2, 2, 3, 0,
-//     4, 5, 6, 6, 7, 4
-// };
+/**
+ * Uniform Buffer Class
+ * 
+ * Contains: Model Matrix, View Matrix, Projection Matrix 
+ * 
+*/
 struct UniformBufferObject {
     alignas(16) glm::mat4 model;
     alignas(16) glm::mat4 view;
     alignas(16) glm::mat4 proj;
 };
 
+
+/**
+ * A Renderer class.
+ * 
+*/
 class BigRenderer {
 public:
     GLFWwindow* window;
@@ -80,15 +65,16 @@ public:
     void render();
     void cleanup();
 private:
-    uint32_t WIDTH = 800;
-    uint32_t HEIGHT = 600;
+    uint32_t WIDTH = 800;   // Window width
+    uint32_t HEIGHT = 600;  // Window height
 
-    uint32_t currentFrame = 0;
+    uint32_t currentFrame = 0;  // The current frame: could be only mod values of MAX_FRAMES_IN_FLIGHT
+    
     bool framebufferResized = false;
     uint32_t mipLevels;
 
-    std::vector<Vertex> vertices;
-    std::vector<uint32_t> indices;
+    std::vector<Vertex> vertices;   // Array of vertices that go to vertex buffer
+    std::vector<uint32_t> indices;  // Array of the corrsponding indices
 
     VkInstance instance;
     VkDebugUtilsMessengerEXT debugMessenger;
@@ -154,12 +140,11 @@ private:
     //VkFence inFlightFence;
 
     void initVulkan();
-    void initWindow();
 
     void pickPhysicalDevice();
-
+    
     bool isDeviceSuitable(VkPhysicalDevice device);
-    int rateDeviceSuitability(VkPhysicalDevice device);
+    // int rateDeviceSuitability(VkPhysicalDevice device);
 
     void createInstance();
     bool checkValidationLayerSupport();

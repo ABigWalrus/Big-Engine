@@ -46,6 +46,9 @@ const std::vector<const char*> validationLayers = {
     "VK_LAYER_KHRONOS_validation"
 };
 
+/**
+ * Device related Extensions required for the app
+*/
 extern const std::vector<const char*> deviceExtensions = {
     VK_KHR_SWAPCHAIN_EXTENSION_NAME
 };
@@ -154,17 +157,6 @@ namespace std {
 //     0, 1, 2, 2, 3, 0,
 //     4, 5, 6, 6, 7, 4
 // };
-// struct UniformBufferObject {
-//     alignas(16) glm::mat4 model;
-//     alignas(16) glm::mat4 view;
-//     alignas(16) glm::mat4 proj;
-// };
-// void BigRenderer::run() {
-//     initWindow();
-//     initVulkan();
-//     mainLoop();
-//     cleanup();
-// }
 
 void BigRenderer::initVulkan() {
     createInstance();
@@ -184,10 +176,7 @@ void BigRenderer::initVulkan() {
     createTextureImage();
     createTextureImageView();
     createTextureSampler();
-    // std::string model_path01 = "../assets/models/cube.obj";
     loadModel(MODEL_PATH);
-    // std::string model_path02 = "../assets/models/viking_room.obj";
-    // loadModel(model_path02);
     createVertexBuffer();
     createIndexBuffer();
     createUniformBuffers();
@@ -198,16 +187,6 @@ void BigRenderer::initVulkan() {
 
     glfwSetFramebufferSizeCallback(window, framebufferResizeCallback);
 }
-
-// void BigRenderer::initWindow() {
-//     glfwInit();
-
-//     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
-//     //glfwWindowHint(GLFW_RESIZABLE, GLFW_FALSE);
-
-//     window = glfwCreateWindow(WIDTH, HEIGHT, "Vulkan", nullptr, nullptr);
-//     glfwSetWindowUserPointer(window, this);
-// }
 
 void BigRenderer::init(GLFWwindow* _window, uint32_t width, uint32_t heigth){
     window = _window;
@@ -271,6 +250,9 @@ void BigRenderer::cleanup() {
     glfwTerminate();
 }
 
+/**
+ * Pick the first most sutable device for the application out of the available devices
+*/
 void BigRenderer::pickPhysicalDevice() {
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -280,20 +262,6 @@ void BigRenderer::pickPhysicalDevice() {
 
     std::vector<VkPhysicalDevice> devices(deviceCount);
     vkEnumeratePhysicalDevices(instance, &deviceCount, devices.data());
-
-    //std::multimap<int, VkPhysicalDevice> candidates;
-
-    //for (const auto& device : devices) {
-    //    int score = rateDeviceSuitability(device);
-    //    candidates.insert(std::make_pair(score, device));
-    //}
-
-    //if (candidates.rbegin()->first > 0) {
-    //    physicalDevice = candidates.rbegin()->second;
-    //}
-    //else {
-    //    throw std::runtime_error("failed to find a suitable GPU!");
-    //}
 
     for (const auto& device : devices) {
         if (isDeviceSuitable(device)) {
@@ -308,13 +276,13 @@ void BigRenderer::pickPhysicalDevice() {
     }
 }
 
+/**
+ * Checks if physical device suitable for rendering
+ * 
+ * The device must support Anisotropic Filtering and Device related Extensions (SwapChain)
+ * Queue Families must support graphics operations, present operations (together with surface)
+*/
 bool BigRenderer::isDeviceSuitable(VkPhysicalDevice device) {
-    //VkPhysicalDeviceProperties deviceProperties;
-    //VkPhysicalDeviceFeatures deviceFeatures;
-    //vkGetPhysicalDeviceProperties(device, &deviceProperties);
-    //vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
-
-    //return  deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU && deviceFeatures.geometryShader;
     QueueFamilyIndices indices = findQueueFamilies(device);
 
     bool extensionsSupported = checkDeviceExtensionSupport(device);
@@ -331,34 +299,41 @@ bool BigRenderer::isDeviceSuitable(VkPhysicalDevice device) {
     return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
 }
 
-int BigRenderer::rateDeviceSuitability(VkPhysicalDevice device) {
-    VkPhysicalDeviceProperties deviceProperties;
-    VkPhysicalDeviceFeatures deviceFeatures;
-    vkGetPhysicalDeviceProperties(device, &deviceProperties);
-    vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
+/**
+ * Not used yet
+*/
+// int BigRenderer::rateDeviceSuitability(VkPhysicalDevice device) {
+//     VkPhysicalDeviceProperties deviceProperties;
+//     VkPhysicalDeviceFeatures deviceFeatures;
+//     vkGetPhysicalDeviceProperties(device, &deviceProperties);
+//     vkGetPhysicalDeviceFeatures(device, &deviceFeatures);
 
-    int score = 0;
+//     int score = 0;
 
-    // Discrete GPUs have a significant performance advantage
-    if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
-        score += 1000;
-    }
+//     // Discrete GPUs have a significant performance advantage
+//     if (deviceProperties.deviceType == VK_PHYSICAL_DEVICE_TYPE_DISCRETE_GPU) {
+//         score += 1000;
+//     }
 
-    // Maximum possible size of textures affects graphics quality
-    score += deviceProperties.limits.maxImageDimension2D;
+//     // Maximum possible size of textures affects graphics quality
+//     score += deviceProperties.limits.maxImageDimension2D;
 
-    // Application can't function without geometry shaders
-    if (!deviceFeatures.geometryShader) {
-        return 0;
-    }
+//     // Application can't function without geometry shaders
+//     if (!deviceFeatures.geometryShader) {
+//         return 0;
+//     }
 
-    return score;
-}
+//     return score;
+// }
 
+/**
+ * Creates an Instance of Vulkan
+*/
 void BigRenderer::createInstance() {
     if (enableValidationLayers && !checkValidationLayerSupport()){
         throw std::runtime_error("validation layers requested, but not available!");
     }
+
     VkApplicationInfo appInfo{};
     appInfo.sType = VK_STRUCTURE_TYPE_APPLICATION_INFO;
     appInfo.pApplicationName = "Hello Triangle";
@@ -371,23 +346,13 @@ void BigRenderer::createInstance() {
     createInfo.sType = VK_STRUCTURE_TYPE_INSTANCE_CREATE_INFO;
     createInfo.pApplicationInfo = &appInfo;
 
-    //uint32_t glfwExtensionCount = 0;
-    //const char** glfwExtensions;
-
-
-    //glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
-
     auto extensions = getRequiredExtensions();
     createInfo.enabledExtensionCount = static_cast<uint32_t>(extensions.size());
     createInfo.ppEnabledExtensionNames = extensions.data();
-    //createInfo.enabledLayerCount = 0;
-
-    //std::vector<const char*> requiredExtensions;
-    //std::cout << glfwExtensions << "\n";
-
-    //VkResult result = vkCreateInstance(&createInfo, nullptr, &instance);
-    VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
+    
     if (enableValidationLayers) {
+        VkDebugUtilsMessengerCreateInfoEXT debugCreateInfo{};
+
         createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
         createInfo.ppEnabledLayerNames = validationLayers.data();
 
@@ -421,8 +386,11 @@ void BigRenderer::createInstance() {
     //}
 }
 
+/**
+ * Checks support for validation layers
+*/
 bool BigRenderer::checkValidationLayerSupport() {
-    std::cout << ". . . Checking validation Layers . . .\n";
+    /// List of available layers may change at any time independent of Vulkan
     uint32_t layerCount;
     vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
 
@@ -433,7 +401,6 @@ bool BigRenderer::checkValidationLayerSupport() {
         bool layerFound = false;
 
         for (const auto& layerProperties : availableLayers) {
-            //std::cout << "validation Layer: " << layerName << '\n' << "available layer: " << layerProperties.layerName << "\n";
             if (strcmp(layerName, layerProperties.layerName) == 0) {
                 layerFound = true;
                 break;
@@ -447,10 +414,19 @@ bool BigRenderer::checkValidationLayerSupport() {
     return true;
 }
 
+/**
+ * Finds Intance related Extensions required for the app
+ * 
+ * Extensions:
+ * - Window Extensions (for GLFW)
+ * - Debugging 
+*/
 std::vector<const char*> BigRenderer::getRequiredExtensions() {
     uint32_t glfwExtensionCount = 0;
     const char** glfwExtensions;
     glfwExtensions = glfwGetRequiredInstanceExtensions(&glfwExtensionCount);
+
+    // std::cout << *glfwExtensions << std::endl;
 
     std::vector<const char*> extensions(glfwExtensions, glfwExtensions + glfwExtensionCount);
 
@@ -460,15 +436,22 @@ std::vector<const char*> BigRenderer::getRequiredExtensions() {
 
     return extensions;
 }
-
+/**
+ * Sets up the creation info for debugging
+ * 
+ * - Message Severity: Verbose, Warning, Error
+ * - Message types: Validation, Performance
+*/
 void BigRenderer::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
     createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
     createInfo.messageSeverity = VK_DEBUG_UTILS_MESSAGE_SEVERITY_VERBOSE_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_WARNING_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_SEVERITY_ERROR_BIT_EXT;
-    createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
+    createInfo.messageType = VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT | VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT;
     createInfo.pfnUserCallback = debugCallback;
 }
-
+/**
+ * Sets up Debug Messenger (called only after creating the Vulkan instance)
+*/
 void BigRenderer::setupDebugMessenger() {
     if (!enableValidationLayers) return;
 
@@ -480,13 +463,31 @@ void BigRenderer::setupDebugMessenger() {
     }
 }
 
+/**
+ * Debug Callback function
+*/
 VKAPI_ATTR VkBool32 VKAPI_CALL BigRenderer::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
-
-    std::cerr << "validation layer: " << pCallbackData->pMessage << std::endl;
-
+    std::string messageTypeOut;
+    switch(messageType) {
+        case VK_DEBUG_UTILS_MESSAGE_TYPE_GENERAL_BIT_EXT:
+            messageTypeOut = "General";
+            break;
+        case VK_DEBUG_UTILS_MESSAGE_TYPE_VALIDATION_BIT_EXT:
+            messageTypeOut = "Validation";
+            break;
+        case VK_DEBUG_UTILS_MESSAGE_TYPE_PERFORMANCE_BIT_EXT:
+            messageTypeOut = "Performance";
+            break;
+    }
+    std::cerr << messageTypeOut << ":" << std::endl << "    " << pCallbackData->pMessage << std::endl;
     return VK_FALSE;
 }
 
+/**
+ * Finds queue families that support graphics operations and presentation operations (together with surface)
+ * 
+ * One queue family may support graphics and/or presentation   
+*/
 QueueFamilyIndices BigRenderer::findQueueFamilies(VkPhysicalDevice device) {
     QueueFamilyIndices indices;
 
@@ -519,12 +520,14 @@ QueueFamilyIndices BigRenderer::findQueueFamilies(VkPhysicalDevice device) {
     return indices;
 }
 
+/**
+ * Creates logical device
+*/
 void BigRenderer::createLogicalDevice() {
     QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
 
     std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
     std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value()};
-    
     float queuePriority = 1.0f;
     for (uint32_t queueFamily : uniqueQueueFamilies) {
         VkDeviceQueueCreateInfo queueCreateInfo{};
@@ -566,12 +569,18 @@ void BigRenderer::createLogicalDevice() {
     vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
 }
 
+/**
+ * Call to GLFW to create Vulkan Surface
+*/
 void BigRenderer::createSurface() {
     if (glfwCreateWindowSurface(instance, window, nullptr, &surface) != VK_SUCCESS) {
         throw std::runtime_error("failed to create window surface");
     }
 }
 
+/**
+ * Checks if the Physical Device supports device related extensions
+*/
 bool BigRenderer::checkDeviceExtensionSupport(VkPhysicalDevice device) {
     uint32_t extensionCount;
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
@@ -580,9 +589,8 @@ bool BigRenderer::checkDeviceExtensionSupport(VkPhysicalDevice device) {
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, availableExtensions.data());
 
     std::set<std::string> requiredExtensions(deviceExtensions.begin(), deviceExtensions.end());
-
+    
     for (const auto& extension : availableExtensions) {
-        //std::cout << extension.extensionName << '\n';
         requiredExtensions.erase(extension.extensionName);
     }
 
