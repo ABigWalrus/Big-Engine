@@ -9,5 +9,7 @@ layout(location = 0) out vec4 outColor;
 
 void main() {
     //texture(texSampler, fragTexCoord)
-    outColor = vec4(1.0);
+    //asjdkasjdkaj
+    outColor = texture(texSampler, fragTexCoord);
+    // outColor = vec4(1.0f);
 }

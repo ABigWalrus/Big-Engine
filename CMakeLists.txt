@@ -56,38 +56,70 @@ file(GLOB_RECURSE FRAGMENT_SHADERS
 	"${SHADERS_SOURCE_DIR}/*.frag"
 )
 
+# add_custom_target(
+#     COMPILED_SHADERS
+#     DEPENDS ${SPIRV_BINARY_FILES}
+# )
+
+
+
+# foreach(VERTEX_SHADER ${VERTEX_SHADERS})
+# 	# get_filename_component(FILE_NAME ${SHADER} NAME)
+# 	# message(STATUS ${FILE_NAME})
+# 	message(STATUS ${GLSL_VALIDATOR})
+# 	set(SPIRV01 "${SHADERS_SOURCE_DIR}/vert.spv")
+# 	add_custom_command(
+# 		OUTPUT ${SPIRV01}
+# 		COMMAND ${GLSL_VALIDATOR} -V ${SHADER} -o ${SPIRV01}
+# 		# WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
+# 		# DEPENDS ${VERTEX_SHADER}
+# 		DEPENDS
+# 	)
+# 	list(APPEND SPIRV_BINARY_FILES ${SPIRV01})
+# endforeach(VERTEX_SHADER)
+
+foreach(SHADER ${FRAGMENT_SHADERS})
+	# get_filename_component(FILE_NAME ${SHADER} NAME)
+	message(STATUS ${SHADER})
+	set(SPIRV "${SHADERS_SOURCE_DIR}/frag.spv")
+	message(STATUS ${SPIRV})
+	add_custom_command(
+		OUTPUT ${SPIRV}
+		COMMAND ${GLSL_VALIDATOR} -V ${SHADER} -o ${SPIRV}
+		DEPENDS ${SHADER}
+	)
+	list(APPEND SPIRV_BINARY_FILES ${SPIRV})
+endforeach(SHADER)
+
+foreach(SHADER ${FRAGMENT_SHADERS})
+	# get_filename_component(FILE_NAME ${SHADER} NAME)
+	message(STATUS ${SHADER})
+	set(SPIRV "${SHADERS_SOURCE_DIR}/frag.spv")
+	message(STATUS ${SPIRV})
+	add_custom_command(
+		OUTPUT ${SPIRV}
+		COMMAND ${GLSL_VALIDATOR} -V ${SHADER} -o ${SPIRV}
+		DEPENDS ${SHADER}
+	)
+	list(APPEND SPIRV_BINARY_FILES ${SPIRV})
+endforeach(SHADER)
+
 add_custom_target(
-    COMPILED_SHADERS
+    default ALL
     DEPENDS ${SPIRV_BINARY_FILES}
 )
-
-foreach(VERTEX_SHADER ${VERTEX_SHADERS})
-	# get_filename_component(FILE_NAME ${SHADER} NAME)
-	# message(STATUS ${FILE_NAME})
-	message(STATUS ${GLSL_VALIDATOR})
-	set(SPIRV01 "${SHADERS_SOURCE_DIR}/vert.spv")
-	add_custom_command(
-		OUTPUT ${SPIRV01}
-		COMMAND ${GLSL_VALIDATOR} -V ${SHADER} -o ${SPIRV01}
-		# WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS ${VERTEX_SHADER}
-	)
-	list(APPEND SPIRV_BINARY_FILES ${SPIRV01})
-endforeach(VERTEX_SHADER)
-
-foreach(FRAGMENT_SHADER ${FRAGMENT_SHADERS})
-	# get_filename_component(FILE_NAME ${SHADER} NAME)
-	message(STATUS ${FRAGMENT_SHADER})
-	set(SPIRV02 "${SHADERS_SOURCE_DIR}/pukpuk.spv")
-	add_custom_command(
-		OUTPUT ${SPIRV02}
-		COMMAND ${GLSL_VALIDATOR} -V ${SHADER} -o ${SPIRV02}
-		# WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}
-		DEPENDS ${FRAGMENT_SHADER}
-	)
-	list(APPEND SPIRV_BINARY_FILES ${SPIRV02})
-endforeach(FRAGMENT_SHADER)
+# add_custom_target(T1 DEPENDS t1.txt)
 
 
+# set(PUK01 "t1.txt")
+# set(FRAGMENT_SHADER "../assets/shaders/shader.frag")
+# add_custom_command(
+#     OUTPUT ${PUK01}
+#     COMMAND echo "Created at `new date`" > ${PUK01}
+#     COMMENT "Creating file.."
+# 	DEPENDS ${FRAGMENT_SHADER}
+#     )
+# list(APPEND SPIRV_BINARY_FILES ${PUK01})
 
 # message(STATUS ${SPIRV_BINARY_FILES})
+# add_custom_target(default ALL DEPENDS ${SPIRV_BINARY_FILES})
