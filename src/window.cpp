@@ -2,6 +2,14 @@
 
 #include <string>
 
+const char** Big::Window::getRequiredWindowsExtensions(uint32_t &extensionCount){
+    return glfwGetRequiredInstanceExtensions(&extensionCount);
+}
+
+VkResult Big::Window::createWindowVkSurface(VkInstance instance, const VkAllocationCallbacks *allocator, VkSurfaceKHR &surface){
+    return glfwCreateWindowSurface(instance, windowPointer, allocator, &surface);
+}
+
 BigWindow::BigWindow(std::string _windowName, uint32_t _width, uint32_t _heigth):windowName{_windowName}, width{_width}, heigth{_heigth}{
     initWindow();
 }
