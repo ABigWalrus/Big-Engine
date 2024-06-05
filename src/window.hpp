@@ -10,6 +10,10 @@ namespace Big{
     public:
         Window(std::string windowName, uint32_t width, uint32_t heigth);
         ~Window();
+
+        Window(const Window &) = delete;
+        Window operator=(const Window &) = delete; 
+
         uint32_t getWidth() const;
         uint32_t getHeight() const;
         GLFWwindow* getWindow() const;
@@ -29,23 +33,23 @@ namespace Big{
         void cleanupWindow();
     };
 }
-class BigWindow{
-public:
-    BigWindow(std::string windowName, uint32_t width, uint32_t heigth);
-    ~BigWindow();
-    uint32_t getWidth() const;
-    uint32_t getHeight() const;
-    GLFWwindow* getWindow() const;
+// class BigWindow{
+// public:
+//     BigWindow(std::string windowName, uint32_t width, uint32_t heigth);
+//     ~BigWindow();
+//     uint32_t getWidth() const;
+//     uint32_t getHeight() const;
+//     GLFWwindow* getWindow() const;
     
-    bool isOpen();
-private:
-    std::string windowName;
+//     bool isOpen();
+// private:
+//     std::string windowName;
     
-    const uint32_t width;
-    const uint32_t heigth;
+//     const uint32_t width;
+//     const uint32_t heigth;
 
-    GLFWwindow* windowPointer;
+//     GLFWwindow* windowPointer;
 
-    void initWindow();
-    void cleanupWindow();
-};
+//     void initWindow();
+//     void cleanupWindow();
+// };

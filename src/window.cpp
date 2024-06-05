@@ -10,15 +10,15 @@ VkResult Big::Window::createWindowVkSurface(VkInstance instance, const VkAllocat
     return glfwCreateWindowSurface(instance, windowPointer, allocator, &surface);
 }
 
-BigWindow::BigWindow(std::string _windowName, uint32_t _width, uint32_t _heigth):windowName{_windowName}, width{_width}, heigth{_heigth}{
+Big::Window::Window(std::string _windowName, uint32_t _width, uint32_t _heigth):windowName{_windowName}, width{_width}, heigth{_heigth}{
     initWindow();
 }
 
-BigWindow::~BigWindow(){
+Big::Window::~Window(){
     cleanupWindow();
 }
 
-void BigWindow::initWindow(){
+void Big::Window::initWindow(){
     glfwInit();
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -27,23 +27,23 @@ void BigWindow::initWindow(){
     windowPointer = glfwCreateWindow(width, heigth, windowName.c_str(), nullptr, nullptr);
     glfwSetWindowUserPointer(windowPointer, this);
 }
-void BigWindow::cleanupWindow(){
+void Big::Window::cleanupWindow(){
     glfwDestroyWindow(windowPointer);
     glfwTerminate();
 }
 
-uint32_t BigWindow::getWidth() const{
+uint32_t Big::Window::getWidth() const{
     return width;
 }
 
-uint32_t BigWindow::getHeight() const{
+uint32_t Big::Window::getHeight() const{
     return heigth;
 }
 
-GLFWwindow* BigWindow::getWindow() const{
+GLFWwindow* Big::Window::getWindow() const{
     return windowPointer;
 }
 
-bool BigWindow::isOpen(){
+bool Big::Window::isOpen(){
         return !glfwWindowShouldClose(windowPointer);
 }

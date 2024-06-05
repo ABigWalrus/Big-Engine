@@ -10,6 +10,10 @@ namespace Big{
     const std::vector<const char*> validationLayers = {
         "VK_LAYER_KHRONOS_validation"
     };
+
+    /**
+     * Device related Extensions required for the app
+    */
     const std::vector<const char*> deviceExtensions = {
         VK_KHR_SWAPCHAIN_EXTENSION_NAME
     };
@@ -37,17 +41,29 @@ namespace Big{
 
     class Device{
     public:
-        void init(Big::Window &window);
-        void cleanup();
+        Device(Big::Window &window);
+        ~Device();
+
+        Device(const Device &) = delete;
+        Device operator=(const Device &) = delete; 
+
     private:
-        Big::Window window;
+        Big::Window &window;
+
+        void init();
+        void cleanup();
 
         VkInstance instance;
         VkDebugUtilsMessengerEXT debugMessenger;
         VkSurfaceKHR surface;
     
-        VkPhysicalDevice physicalDevice;
-        VkSampleCountFlagBits msaaSamples;
+        VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
+        VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
+
+        VkDevice device;
+
+        VkQueue graphicsQueue;
+        VkQueue presentQueue;
 
         void createInstance();
         void setupDebugMessenger();
@@ -66,5 +82,7 @@ namespace Big{
         SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 
         VkSampleCountFlagBits getMaxUsableSampleCount();
+
+        void createLogicalDevice();
     };
 }

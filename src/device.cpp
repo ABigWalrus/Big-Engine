@@ -19,9 +19,43 @@ VkResult Big::createDebugUtilsMessengerEXT(VkInstance instance, const VkDebugUti
     }
 }
 
-void Big::Device::init(){
+void Big::DestroyDebugUtilsMessengerEXT(VkInstance instance, VkDebugUtilsMessengerEXT debugMessenger, const VkAllocationCallbacks* pAllocator) {
+    auto func = (PFN_vkDestroyDebugUtilsMessengerEXT)vkGetInstanceProcAddr(instance, "vkDestroyDebugUtilsMessengerEXT");
+    if (func != nullptr) {
+        func(instance, debugMessenger, pAllocator);
+    }
 }
 
+Big::Device::Device(Big::Window &window):window{window}{
+    init();
+}
+
+Big::Device::~Device(){
+    cleanup();
+}
+
+void Big::Device::init(){
+    createInstance();
+    setupDebugMessenger();
+    createSurface();
+    pickPhysicalDevice();
+    createLogicalDevice();
+}
+
+void Big::Device::cleanup(){
+    // vkDeviceWaitIdle(device);
+    vkDestroyDevice(device, nullptr);
+
+    if (enableValidationLayers) {
+        DestroyDebugUtilsMessengerEXT(instance, debugMessenger, nullptr);
+    }
+    vkDestroySurfaceKHR(instance, surface, nullptr);
+    vkDestroyInstance(instance, nullptr);
+}
+
+/**
+ * Creates an Instance of Vulkan
+*/
 void Big::Device::createInstance(){
     if (enableValidationLayers && !checkValidationLayerSupport()){
         throw std::runtime_error("validation layers requested, but not available!");
@@ -62,17 +96,9 @@ void Big::Device::createInstance(){
     }
 }
 
-void Big::Device::setupDebugMessenger() {
-    if (!enableValidationLayers) return;
-
-    VkDebugUtilsMessengerCreateInfoEXT createInfo;
-    populateDebugMessengerCreateInfo(createInfo);
-
-    if (createDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) {
-        throw std::runtime_error("failed to set up debug messenger!");
-    }
-}
-
+/**
+ * Checks support for validation layers
+*/
 bool Big::Device::checkValidationLayerSupport(){
     uint32_t layerCount;
     vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
@@ -97,6 +123,13 @@ bool Big::Device::checkValidationLayerSupport(){
     return true;
 }
 
+/**
+ * Finds Intance related Extensions required for the app
+ * 
+ * Extensions:
+ * - Window Extensions (for GLFW)
+ * - Debugging 
+*/
 std::vector<const char*> Big::Device::getRequiredExtensions(){
     uint32_t extensionCount = 0;
     const char** windowExtensions;
@@ -113,6 +146,12 @@ std::vector<const char*> Big::Device::getRequiredExtensions(){
     return extensions;
 }
 
+/**
+ * Sets up the creation info for debugging
+ * 
+ * - Message Severity: Verbose, Warning, Error
+ * - Message types: Validation, Performance
+*/
 void Big::Device::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo) {
     createInfo = {};
     createInfo.sType = VK_STRUCTURE_TYPE_DEBUG_UTILS_MESSENGER_CREATE_INFO_EXT;
@@ -121,6 +160,9 @@ void Big::Device::populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateIn
     createInfo.pfnUserCallback = debugCallback;
 }
 
+/**
+ * Debug Callback function
+*/
 VKAPI_ATTR VkBool32 VKAPI_CALL Big::Device::debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData) {
     std::string messageTypeOut;
     switch(messageType) {
@@ -138,13 +180,32 @@ VKAPI_ATTR VkBool32 VKAPI_CALL Big::Device::debugCallback(VkDebugUtilsMessageSev
     return VK_FALSE;
 }
 
+/**
+ * Sets up Debug Messenger (called only after creating the Vulkan instance)
+*/
+void Big::Device::setupDebugMessenger() {
+    if (!enableValidationLayers) return;
 
+    VkDebugUtilsMessengerCreateInfoEXT createInfo;
+    populateDebugMessengerCreateInfo(createInfo);
+
+    if (createDebugUtilsMessengerEXT(instance, &createInfo, nullptr, &debugMessenger) != VK_SUCCESS) {
+        throw std::runtime_error("failed to set up debug messenger!");
+    }
+}
+
+/**
+ * Call to Big::Window to create Vulkan Surface
+*/
 void Big::Device::createSurface() {
     if (window.createWindowVkSurface(instance, nullptr, surface) != VK_SUCCESS) {
         throw std::runtime_error("failed to create window surface");
     }
 }
 
+/**
+ * Pick the first most sutable device for the application out of the available devices
+*/
 void Big::Device::pickPhysicalDevice(){
     uint32_t deviceCount = 0;
     vkEnumeratePhysicalDevices(instance, &deviceCount, nullptr);
@@ -168,6 +229,12 @@ void Big::Device::pickPhysicalDevice(){
     }
 }
 
+/**
+ * Checks if physical device suitable for rendering
+ * 
+ * The device must support Anisotropic Filtering and Device related Extensions (SwapChain)
+ * Queue Families must support graphics operations, present operations (together with surface)
+*/
 bool Big::Device::isPhysicalDeviceSuitable(VkPhysicalDevice device){
     QueueFamilyIndices indices = findQueueFamilies(device);
 
@@ -185,7 +252,11 @@ bool Big::Device::isPhysicalDeviceSuitable(VkPhysicalDevice device){
     return indices.isComplete() && extensionsSupported && swapChainAdequate && supportedFeatures.samplerAnisotropy;
 }
 
-
+/**
+ * Finds queue families that support graphics operations and presentation operations (together with surface)
+ * 
+ * One queue family may support graphics and/or presentation   
+*/
 Big::QueueFamilyIndices Big::Device::findQueueFamilies(VkPhysicalDevice device){
     QueueFamilyIndices indices;
 
@@ -218,6 +289,9 @@ Big::QueueFamilyIndices Big::Device::findQueueFamilies(VkPhysicalDevice device){
     return indices;
 }
 
+/**
+ * Checks if the Physical Device supports device related extensions
+*/
 bool Big::Device::checkDeviceExtensionSupport(VkPhysicalDevice device) {
     uint32_t extensionCount;
     vkEnumerateDeviceExtensionProperties(device, nullptr, &extensionCount, nullptr);
@@ -271,4 +345,53 @@ VkSampleCountFlagBits Big::Device::getMaxUsableSampleCount() {
     if (counts & VK_SAMPLE_COUNT_2_BIT) { return VK_SAMPLE_COUNT_2_BIT; }
 
     return VK_SAMPLE_COUNT_1_BIT;
+}
+
+/**
+ * Creates logical device
+*/
+void Big::Device::createLogicalDevice() {
+    QueueFamilyIndices indices = findQueueFamilies(physicalDevice);
+
+    std::vector<VkDeviceQueueCreateInfo> queueCreateInfos;
+    std::set<uint32_t> uniqueQueueFamilies = { indices.graphicsFamily.value(), indices.presentFamily.value()};
+    float queuePriority = 1.0f;
+    for (uint32_t queueFamily : uniqueQueueFamilies) {
+        VkDeviceQueueCreateInfo queueCreateInfo{};
+        queueCreateInfo.sType = VK_STRUCTURE_TYPE_DEVICE_QUEUE_CREATE_INFO;
+        queueCreateInfo.queueFamilyIndex = queueFamily;
+        queueCreateInfo.queueCount = 1;
+        queueCreateInfo.pQueuePriorities = &queuePriority;
+        queueCreateInfos.push_back(queueCreateInfo);
+    }
+
+    VkPhysicalDeviceFeatures deviceFeatures{};
+    deviceFeatures.samplerAnisotropy = VK_TRUE;
+    deviceFeatures.sampleRateShading = VK_TRUE; 
+
+    VkDeviceCreateInfo createInfo{};
+    createInfo.sType = VK_STRUCTURE_TYPE_DEVICE_CREATE_INFO;
+
+    createInfo.queueCreateInfoCount = static_cast<uint32_t>(queueCreateInfos.size());
+    createInfo.pQueueCreateInfos = queueCreateInfos.data();
+
+    createInfo.pEnabledFeatures = &deviceFeatures;
+
+    createInfo.enabledExtensionCount = static_cast<uint32_t>(deviceExtensions.size());
+    createInfo.ppEnabledExtensionNames = deviceExtensions.data();
+
+    if (enableValidationLayers) {
+        createInfo.enabledLayerCount = static_cast<uint32_t>(validationLayers.size());
+        createInfo.ppEnabledLayerNames = validationLayers.data();
+    }
+    else {
+        createInfo.enabledLayerCount = 0;
+    }
+
+    if (vkCreateDevice(physicalDevice, &createInfo, nullptr, &device) != VK_SUCCESS) {
+        throw std::runtime_error("failed to create logical device!");
+    }
+
+    vkGetDeviceQueue(device, indices.graphicsFamily.value(), 0, &graphicsQueue);
+    vkGetDeviceQueue(device, indices.presentFamily.value(), 0, &presentQueue);
 }
