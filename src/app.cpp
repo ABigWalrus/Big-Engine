@@ -22,10 +22,10 @@ void Application::run(){
 }
 
 void Application::init(){
-    renderer.init(window.getWindow(), window.getWidth(), window.getWidth());   
+    // renderer.init(window.getWindow(), window.getWidth(), window.getWidth());   
 }
 
 
 void Application::cleanup(){
-    renderer.cleanup();
+    // renderer.cleanup();
 }

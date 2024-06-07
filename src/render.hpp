@@ -12,23 +12,13 @@
 #define GLM_ENABLE_EXPERIMENTAL
 #include <glm/gtx/hash.hpp>
 
+#include "device.hpp"
+#include "window.hpp"
+
 #include <vector>
 #include <optional>
 #include <string>
 
-
-struct QueueFamilyIndices {
-    std::optional<uint32_t> graphicsFamily;
-    std::optional<uint32_t> presentFamily;
-
-    bool isComplete();
-};
-
-struct SwapChainSupportDetails {
-    VkSurfaceCapabilitiesKHR capabilities;
-    std::vector<VkSurfaceFormatKHR> formats;
-    std::vector<VkPresentModeKHR> presentModes;
-};
 
 struct Vertex {
     glm::vec3 pos;
@@ -53,20 +43,27 @@ struct UniformBufferObject {
 };
 
 
+namespace Big{
 /**
  * A Renderer class.
  * 
 */
-class BigRenderer {
+class Renderer {
 public:
-    GLFWwindow* window;
+    // GLFWwindow* window;
 
-    void init(GLFWwindow* window, uint32_t width, uint32_t heigth);
+    // void init();
     void render();
     void cleanup();
+
+    Renderer(Big::Window &window, Big::Device &device);
+    ~Renderer();
+
+    Renderer(const Renderer &) = delete;
+    Renderer &operator=(const Renderer &) = delete;
 private:
-    uint32_t WIDTH = 800;   // Window width
-    uint32_t HEIGHT = 600;  // Window height
+    uint32_t WIDTH = 0;   // Window width
+    uint32_t HEIGHT = 0;  // Window height
 
     uint32_t currentFrame = 0;  // The current frame: could be only mod values of MAX_FRAMES_IN_FLIGHT
     
@@ -76,16 +73,8 @@ private:
     std::vector<Vertex> vertices;   // Array of vertices that go to vertex buffer
     std::vector<uint32_t> indices;  // Array of the corrsponding indices
 
-    VkInstance instance;
-    VkDebugUtilsMessengerEXT debugMessenger;
-    VkSurfaceKHR surface;
-
-    VkPhysicalDevice physicalDevice = VK_NULL_HANDLE;
-    VkSampleCountFlagBits msaaSamples = VK_SAMPLE_COUNT_1_BIT;
-    VkDevice device;
-
-    VkQueue graphicsQueue;
-    VkQueue presentQueue;
+    Big::Window &bigWindow;
+    Big::Device &bigDevice;
 
     VkSwapchainKHR swapChain;
 
@@ -135,36 +124,7 @@ private:
     std::vector<VkSemaphore> renderFinishedSemaphores;
     std::vector<VkFence> inFlightFences;
 
-    //VkSemaphore imageAvailableSemaphore;
-    //VkSemaphore renderFinishedSemaphore;
-    //VkFence inFlightFence;
-
     void initVulkan();
-
-    void pickPhysicalDevice();
-    
-    bool isDeviceSuitable(VkPhysicalDevice device);
-    // int rateDeviceSuitability(VkPhysicalDevice device);
-
-    void createInstance();
-    bool checkValidationLayerSupport();
-    std::vector<const char*> getRequiredExtensions();
-
-    void populateDebugMessengerCreateInfo(VkDebugUtilsMessengerCreateInfoEXT& createInfo);
-
-    void setupDebugMessenger();
-
-    static VKAPI_ATTR VkBool32 VKAPI_CALL debugCallback(VkDebugUtilsMessageSeverityFlagBitsEXT messageSeverity, VkDebugUtilsMessageTypeFlagsEXT messageType, const VkDebugUtilsMessengerCallbackDataEXT* pCallbackData, void* pUserData);
-    
-    QueueFamilyIndices findQueueFamilies(VkPhysicalDevice device);
-
-    void createLogicalDevice();
-
-    void createSurface();
-
-    bool checkDeviceExtensionSupport(VkPhysicalDevice device);
-
-    SwapChainSupportDetails querySwapChainSupport(VkPhysicalDevice device);
 
     VkSurfaceFormatKHR chooseSwapSurfaceFormat(const std::vector<VkSurfaceFormatKHR>& availableFormats);
 
@@ -247,7 +207,6 @@ private:
 
     void loadModel(std::string model_path);
 
-    VkSampleCountFlagBits getMaxUsableSampleCount();
-
     void createColorResources();
 };  
+}

@@ -2,23 +2,18 @@
 
 #include <string>
 
-const char** Big::Window::getRequiredWindowsExtensions(uint32_t &extensionCount){
-    return glfwGetRequiredInstanceExtensions(&extensionCount);
-}
+namespace Big{
 
-VkResult Big::Window::createWindowVkSurface(VkInstance instance, const VkAllocationCallbacks *allocator, VkSurfaceKHR &surface){
-    return glfwCreateWindowSurface(instance, windowPointer, allocator, &surface);
-}
 
-Big::Window::Window(std::string _windowName, uint32_t _width, uint32_t _heigth):windowName{_windowName}, width{_width}, heigth{_heigth}{
+Window::Window(std::string _windowName, uint32_t _width, uint32_t _heigth):windowName{_windowName}, width{_width}, heigth{_heigth}{
     initWindow();
 }
 
-Big::Window::~Window(){
+Window::~Window(){
     cleanupWindow();
 }
 
-void Big::Window::initWindow(){
+void Window::initWindow(){
     glfwInit();
 
     glfwWindowHint(GLFW_CLIENT_API, GLFW_NO_API);
@@ -27,23 +22,45 @@ void Big::Window::initWindow(){
     windowPointer = glfwCreateWindow(width, heigth, windowName.c_str(), nullptr, nullptr);
     glfwSetWindowUserPointer(windowPointer, this);
 }
-void Big::Window::cleanupWindow(){
+
+void Window::cleanupWindow(){
     glfwDestroyWindow(windowPointer);
     glfwTerminate();
 }
 
-uint32_t Big::Window::getWidth() const{
+const char** Window::getRequiredWindowsExtensions(uint32_t &extensionCount){
+    return glfwGetRequiredInstanceExtensions(&extensionCount);
+}
+
+VkResult Window::createWindowVkSurface(VkInstance instance, const VkAllocationCallbacks *allocator, VkSurfaceKHR &surface){
+    return glfwCreateWindowSurface(instance, windowPointer, allocator, &surface);
+}
+
+void Window::setFramebufferSizeCallback(GLFWframebuffersizefun callback){
+    glfwSetFramebufferSizeCallback(windowPointer, callback);
+}
+
+uint32_t Window::getWidth() const{
     return width;
 }
 
-uint32_t Big::Window::getHeight() const{
+uint32_t Window::getHeight() const{
     return heigth;
 }
 
-GLFWwindow* Big::Window::getWindow() const{
+GLFWwindow* Window::getWindow() const{
     return windowPointer;
 }
 
-bool Big::Window::isOpen(){
+bool Window::isOpen(){
         return !glfwWindowShouldClose(windowPointer);
+}
+
+void Window::getFramebufferSize(int &width, int &height){
+    glfwGetFramebufferSize(windowPointer, &width, &height);
+}
+
+void Window::windowWaitEvents(){
+    glfwWaitEvents();
+}
 }

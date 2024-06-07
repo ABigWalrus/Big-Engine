@@ -21,6 +21,9 @@ namespace Big{
         bool isOpen();
         const char** getRequiredWindowsExtensions(uint32_t &extensionCount);
         VkResult createWindowVkSurface(VkInstance instance, const VkAllocationCallbacks *allocator, VkSurfaceKHR &surface);
+        void setFramebufferSizeCallback(GLFWframebuffersizefun framebufferResizeCallback);
+        void getFramebufferSize(int &width, int &height);
+        void windowWaitEvents();
     private:
         std::string windowName;
         

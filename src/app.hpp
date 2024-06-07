@@ -1,15 +1,16 @@
 #pragma once
 
-#include "render.hpp"
 #include "window.hpp"
+#include "device.hpp"
+#include "render.hpp"
 #include <string>
 
 class Application{
 public:
     // std::string name;
     // uint64_t renders = 0;
-    static constexpr uint32_t WIDTH = 800;
-    static constexpr uint32_t HEIGTH = 600;
+    static constexpr uint32_t WIDTH = 1600;
+    static constexpr uint32_t HEIGTH = 720;
 
     Application();
     ~Application();
@@ -19,8 +20,9 @@ public:
     // void cleanup();
 
 private:
-    BigWindow window{"TEST WINDOW", WIDTH, HEIGTH};
-    BigRenderer renderer;
+    Big::Window window{"TEST WINDOW", WIDTH, HEIGTH};
+    Big::Device device{window};
+    Big::Renderer renderer{window, device};
 
     // void initWindow();
     // void mainLoop();
